@@ -11,8 +11,7 @@ spec:
     branch: main
   secretRef:
     name: flux-system
-  url: ssh://git@github.com/Luv7804/gitops-flux
----
+  url: ssh://git@github.com/Luv7804/github-action-runner
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
