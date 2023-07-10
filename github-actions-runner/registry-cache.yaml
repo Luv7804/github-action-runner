@@ -1,0 +1,89 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: registry-cache
+  namespace: ghar-controller
+spec:
+  selector:
+    matchLabels:
+      app: registry-cache # has to match .spec.template.metadata.labels
+  serviceName: "registry-cache"
+  replicas: 1 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: registry-cache # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 20
+      containers:
+        - name: registry-cache
+          image: registry:2.7.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+              name: http
+          volumeMounts:
+            - name: registry-cache
+              mountPath: /var/lib/registry
+            - name: registry-config
+              mountPath: /etc/docker/registry/
+          resources:
+            requests:
+              cpu: 80m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+      volumes:
+        - name: registry-config
+          configMap:
+            name: registry-config
+  volumeClaimTemplates:
+    - metadata:
+        name: registry-cache
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        # storageClassName: "local-path"
+        resources:
+          requests:
+            storage: 20Gi
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: registry-config
+  namespace: ghar-controller
+data:
+  config.yml: |
+    version: 0.1
+    log:
+      level: info
+    http:
+      addr: 0.0.0.0:5000
+    proxy:
+      remoteurl: https://registry-1.docker.io
+    debug:
+      addr: 0.0.0.0:5001
+      prometheus:
+        enabled: true
+        path: /metrics
+    storage:
+      filesystem:
+        rootdirectory: /var/lib/registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry-cache
+  namespace: ghar-controller
+spec:
+  selector:
+    app: registry-cache
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+      # nodePort: 30001

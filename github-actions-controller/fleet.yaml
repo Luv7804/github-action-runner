@@ -1,0 +1,11 @@
+defaultNamespace: actions-runner-controller
+helm:
+  releaseName: actions-runner-controller
+  repo: https://actions-runner-controller.github.io/actions-runner-controller
+  chart: actions-runner-controller
+  version: 0.21.0
+  values:
+    authSecret:
+      enabled: true
+      create: true
+      github_token: "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"
