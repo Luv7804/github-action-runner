@@ -2,31 +2,24 @@
 apiVersion: actions.summerwind.dev/v1alpha1
 kind: HorizontalRunnerAutoscaler
 metadata:
-  name: improwised-runner-autoscaler
+  name: chintan-runner-autoscaler
   namespace: ghar-controller
 spec:
   scaleDownDelaySecondsAfterScaleOut: 10
   scaleTargetRef:
-    name: improwised-runner
+    name: chintan-runner
   minReplicas: 1
   maxReplicas: 4
   metrics:
     - type: TotalNumberOfQueuedAndInProgressWorkflowRuns
       repositoryNames:
-        - apricot-2
-        - webauditor-logs
-        - management
-        - releases
-        - charts
-        - kb.repairrabbit.github.io
-        - grid-portfolio
-        - repairrabbit
-        - repairrabbit-purchase
+        - flux-firefly
+        - github-action-runner
 ---
 apiVersion: actions.summerwind.dev/v1alpha1
 kind: RunnerDeployment
 metadata:
-  name: improwised-runner
+  name: chintan-runner
   namespace: ghar-controller
 spec:
   replicas: 1
@@ -34,7 +27,7 @@ spec:
     spec:
       labels:
         - "docker-runner"
-      organization: Improwised
+      organization: improwised
       image: improwised/ghar-image:feat-add-buildah-f157dd9-1667219679
       dockerRegistryMirror: http://registry-cache:5000
       dockerdWithinRunnerContainer: true
