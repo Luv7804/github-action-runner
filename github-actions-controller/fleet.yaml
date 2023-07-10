@@ -8,4 +8,4 @@ helm:
     authSecret:
       enabled: true
       create: true
-      github_token: "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"
+      github_token: "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"
